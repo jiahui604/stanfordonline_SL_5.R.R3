@@ -14,13 +14,8 @@ legend
 
 #bootstrap - Standard Error 
 se = function(data,depend,z1,z2){
-  #y_bar = mean(y)
   lr = lm(depend ~ z1+z2,data=data)
-  #y_pred = predict(lr)
-  beta = summary(lr)$coefficients[2, 2]
-  #standardd = sqrt(sum((y_pred-y_bar)^2/(length(y)-1)))
-  #standarde = standardd/sqrt(length(y))
-  beta
+  return(coef(lr))
 }
 
 se(Xy,y,X1,X2)
@@ -32,7 +27,16 @@ se.fn = function(data2,index){
 se.fn(Xy,1:1000)
 
 set.seed(17)
-alpha.fn(Xy,sample(1:1000,1000,replace = TRUE))
+se.fn(Xy,sample(1:1000,1000,replace = TRUE))
 
 boot.out= boot(Xy,se.fn, R=1000)
 boot.out
+
+
+#bootstrap - standard error 2
+boot.fn <- function(data, index) {
+  lr <- lm(y~.,data=Xy,subset = index)
+  return (coef(lr))
+}
+
+boot(Xy,boot.fn,R=1000)
